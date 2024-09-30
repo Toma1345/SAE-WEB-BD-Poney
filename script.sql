@@ -44,3 +44,7 @@ ALTER TABLE COURS ADD FOREIGN KEY (idM) REFERENCES MONITEURS (idM);
 ALTER TABLE COURS ADD FOREIGN KEY (idP) REFERENCES PONEYS (idP);
 
 -- Contraintes en trigger
+
+delimiter |
+
+delimiter ;
