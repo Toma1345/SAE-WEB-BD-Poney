@@ -46,5 +46,31 @@ ALTER TABLE COURS ADD FOREIGN KEY (idP) REFERENCES PONEYS (idP);
 -- Contraintes en trigger
 
 delimiter |
+CREATE OR REPLACE TRIGGER verifPoidsMax before insert on COURS for each row
+begin 
+  declare poidsMaxPoney int;
+  declare poidsPersonne int;
+  declare message VARCHAR(100);
+  select poidsMax into poidsMaxPoney from PONEYS where idP = new.idP;
+  select poidsA into poidsPersonne from ADHERENTS where idA = new.idA;
+  if poidsPersonne > poidsMaxPoney then
+    set message = concat("association impossible entre l'adhérent ", new.idA, " et le poney ", new.idP, ", Poids max dépassé");
+    signal SQLSTATE '45000' set MESSAGE_TEXT = message;
+  end if;
+end |
+delimiter ;
 
+delimiter |
+CREATE OR REPLACE TRIGGER updateVerifPoidsMax before update on COURS for each row
+begin 
+  declare poidsMaxPoney int;
+  declare poidsPersonne int;
+  declare message VARCHAR(100);
+  select poidsMax into poidsMaxPoney from PONEYS where idP = new.idP;
+  select poidsA into poidsPersonne from ADHERENTS where idA = new.idA;
+  if poidsPersonne > poidsMaxPoney then
+    set message = concat("association impossible entre l'adhérent ", new.idA, " et le poney ", new.idP, ", Poids max dépassé");
+    signal SQLSTATE '45000' set MESSAGE_TEXT = message;
+  end if;
+end |
 delimiter ;
