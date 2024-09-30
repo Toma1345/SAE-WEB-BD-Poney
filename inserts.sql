@@ -14,9 +14,9 @@ VALUES
 
 INSERT INTO PONEYS (idP, nom, poidsMax) 
 VALUES 
-(1, 'Caramel', '80kg'),
-(2, 'Paillette', '70kg'),
-(3, 'Eclair', '90kg');
+(1, 'Caramel', 80),
+(2, 'Paillette', 70),
+(3, 'Eclair', 90);
 
 INSERT INTO COURS (duree, nbPersMax, dateC, heureC, idA, idM, idP) 
 VALUES 

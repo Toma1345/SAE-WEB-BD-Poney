@@ -25,7 +25,7 @@ CREATE TABLE MONITEURS (
 CREATE TABLE PONEYS (
   idP INT(10) NOT NULL primary key,
   nom VARCHAR(42),
-  poidsMax VARCHAR(42)
+  poidsMax int(5)
 );
 
 CREATE TABLE COURS (
