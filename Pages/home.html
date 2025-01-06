@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Galop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+            color: #4CAF50;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #4CAF50;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .hero h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .hero .btn {
+            margin-top: 20px;
+        }
+
+        .ponies {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .pony {
+            background-color: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .pony img {
+            width: 100%;
+            height: auto;
+        }
+
+        .pony h3 {
+            margin: 10px 0;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .pony p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-top: 1px solid #e5e5e5;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="home.html">Grand Galop</a></h1>
+        <nav>
+            <a href="reservations.html">Réserver un cours</a>
+            <a href="planning.php">Consulter les horaires</a>
+            <a href="#">Consulter les tarifs</a>
+            <a href="profil.html">Mon profil</a>
+            <a href="mes-cours.html" class="btn">Mes cours</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Vous êtes <em>licenciés</em> à la FFE<br>Venez découvrir nos <em>poneys</em> !</h2>
+        <a href="#" class="btn">Réserver un cours</a>
+    </section>
+
+    <section class="ponies">
+        <div class="pony">
+            <img src="images/bubble.png" alt="Bubble">
+            <h3>Bubble</h3>
+            <p>Il adore prendre la pose pour les photos !</p>
+        </div>
+        <div class="pony">
+            <img src="images/california.jpeg" alt="California">
+            <h3>California</h3>
+            <p>Le plus jeune poney de notre centre équestre !</p>
+        </div>
+    </section>
+
+    <section class="hero">
+        <h2>REJOIGNEZ-NOUS !</h2>
+        <p>
+            Envie de vivre une expérience unique avec nos poneys ? Que vous soyez débutant ou confirmé, nous proposons des cours individuels ou collectifs adaptés à tous les âges. Réservez facilement vos séances avec nos moniteurs qualifiés, tout en respectant le bien-être des poneys. Venez galoper avec nous et découvrez le plaisir de l’équitation en pleine nature !
+        </p>
+        <strong>Réservez dès maintenant et rejoignez l’aventure Grand Galop !</strong>
+    </section>
+
+    <footer class="footer">
+        &copy; 2025 Grand Galop. Tous droits réservés.
+    </footer>
+</body>
+</html>
