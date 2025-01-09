@@ -9,34 +9,34 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
-            color: #333;
+            background-color: #f8f8f8;
         }
 
         header {
-            background-color: #ffffff;
-            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
         }
 
         header h1 {
-            font-size: 24px;
-            margin: 0;
-            color: #4CAF50;
+            color: #2d572c;
+            font-size: 1.5rem;
         }
 
-        nav a {
-            margin-left: 20px;
+        header nav a {
+            margin-right: 1rem;
             text-decoration: none;
-            color: #333;
-            font-size: 16px;
+            color: #000;
         }
 
-        nav a:hover {
-            color: #4CAF50;
+        header nav a:last-child {
+            color: #ffffff;
+            background-color: #2d572c;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
         }
 
         .btn {
@@ -79,16 +79,16 @@
             border-radius: 10px;
             overflow: hidden;
             text-align: left;
-            width: 821px;
+            width: 820px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             display: flex;
-            flex-direction:row;
-            margin: 5px;
+            flex-direction: row;
+            margin: 2%;
         }
 
         .course img {
-            height: 160px;
             width: 160px;
+            height: 160px;
             object-fit: cover;
         }
 
@@ -189,9 +189,9 @@
         <nav>
             <a href="reservations.html">Réserver un cours</a>
             <a href="planning.php">Consulter les horaires</a>
-            <a href="#">Consulter les tarifs</a>
+            <a href="tarifs.html">Consulter les tarifs</a>
             <a href="profil.html">Mon profil</a>
-            <a href="mes-cours.html" class="btn">Mes cours</a>
+            <a href="planningcours.html" class="btn">Mes cours</a>
         </nav>
     </header>
 

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes cours</title>
+    <style>
+                body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        header h1 {
+            color: #2d572c;
+            font-size: 1.5rem;
+        }
+
+        header nav a {
+            margin-right: 1rem;
+            text-decoration: none;
+            color: #000;
+        }
+
+        header nav a:last-child {
+            color: #ffffff;
+            background-color: #2d572c;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            align-items: start;
+        }
+
+        .grid .hour {
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            color: #555;
+        }
+
+        .grid .day {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .grid .cell {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f8f8;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .course {
+            background-color: #e9f5f1;
+            border: 2px solid #007f5f;
+            border-radius: 8px;
+            color: #007f5f;
+            font-weight: bold;
+        }
+
+        .course span {
+            display: block;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .course.double {
+            grid-row: span 2;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="home.html">Grand Galop</a></h1>
+        <nav>
+            <a href="reservations.html">Réserver un cours</a>
+            <a href="planning.php">Consulter les horaires</a>
+            <a href="tarifs.html">Consulter les tarifs</a>
+            <a href="profil.html">Mon profil</a>
+            <a href="planningcours.html" class="btn">Mes cours</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="title">Mes cours</div>
+        <div class="grid">
+            <!-- Days of the week -->
+            <div class="hour"></div>
+            <div class="day">Lundi<br>21 / 10</div>
+            <div class="day">Mardi<br>22 / 10</div>
+            <div class="day">Mercredi<br>23 / 10</div>
+            <div class="day">Jeudi<br>24 / 10</div>
+            <div class="day">Vendredi<br>25 / 10</div>
+            <div class="day">Samedi<br>26 / 10</div>
+            <div class="day">Dimanche<br>27 / 10</div>
+
+            <!-- Time slots -->
+            <div class="hour">9h</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <div class="hour">10h</div>
+            <div class="cell course">Découverte<br><span>75 €</span></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <div class="hour">11h</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <div class="hour">14h</div>
+            <div class="cell"></div>
+            <div class="cell course">Balade en forêt<br><span>150 €</span></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <div class="hour">15h</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell course double">Grande balade en forêt<br><span>175 €</span></div>
+            <div class="cell"></div>
+
+            <div class="hour">16h</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <!-- Empty cell since the "Grande balade" takes up two rows -->
+            <div class="cell"></div>
+        </div>
+    </div>
+</body>
+</html>
+

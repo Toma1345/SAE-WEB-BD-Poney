@@ -5,39 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planning des horaires - Grand Galop</title>
     <style>
-        /* Styles globaux */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            background-color: #f8f8f8;
         }
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            background-color: white;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
             border-bottom: 1px solid #ddd;
         }
+
         header h1 {
-            font-size: 24px;
-            color: #2e7d32;
-            margin: 0;
+            color: #2d572c;
+            font-size: 1.5rem;
         }
+
         header nav a {
-            margin-left: 15px;
+            margin-right: 1rem;
             text-decoration: none;
-            color: #333;
-            font-size: 14px;
+            color: #000;
         }
-        header .btn {
-            background-color: #2e7d32;
-            color: white;
-            padding: 8px 15px;
-            border: none;
+
+        header nav a:last-child {
+            color: #ffffff;
+            background-color: #2d572c;
+            padding: 0.5rem 1rem;
             border-radius: 5px;
-            cursor: pointer;
         }
 
         main {
@@ -105,20 +104,20 @@
         .bubble.available:hover {
             background-color: #c8e6c9;
         }
-        .bubble.unavailable:hover {
+        /*.bubble.unavailable:hover {
             background-color: #ffcdd2;
-        }
+        }*/
     </style>
 </head>
 <body>
-    <header>
+<header>
         <h1><a href="home.html">Grand Galop</a></h1>
         <nav>
             <a href="reservations.html">Réserver un cours</a>
             <a href="planning.php">Consulter les horaires</a>
-            <a href="#">Consulter les tarifs</a>
+            <a href="tarifs.html">Consulter les tarifs</a>
             <a href="profil.html">Mon profil</a>
-            <a href="mes-cours.html" class="btn">Mes cours</a>
+            <a href="planningcours.html" class="btn">Mes cours</a>
         </nav>
     </header>
 
@@ -166,3 +165,4 @@
     </main>
 </body>
 </html>
+
