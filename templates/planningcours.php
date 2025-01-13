@@ -20,7 +20,7 @@ try {
 
     // Structure des jours et heures
     $days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-    $hours = ['9h', '10h', '11h', '14h', '15h', '16h', '17h'];
+    $hours = ['9h', '10h', '11h', '13h', '14h', '15h', '16h', '17h'];
 
     // Organisation des cours par jour et heure
     $planning = [];

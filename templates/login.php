@@ -3,19 +3,16 @@ session_start();
 
 require_once "../bd/DataBase.php";
 
-// Message de déconnexion
 if (isset($_GET['logout']) && $_GET['logout'] == 'success') {
     $logout_message = "Vous avez été déconnecté avec succès.";
 }
 
 try {
-    // Connexion à la base de données
     $pdo = Database::getConnection();
 } catch (PDOException $e) {
     die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
 
-// Vérification des identifiants
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -23,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (strpos($username, '.') !== false) {
         [$prenom, $nom] = explode('.', $username, 2);
 
-        // Normaliser en minuscules
         $prenom = strtolower($prenom);
         $nom = strtolower($nom);
 
@@ -35,10 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            // Comparaison directe du mot de passe en clair
             if ($password === $user['mdp']) {
                 $_SESSION['logged_in'] = true;
                 $_SESSION['user_name'] = ucfirst($user['prenomA']) . ' ' . ucfirst($user['nomA']);
+                $_SESSION['prenom'] = $user['prenomA'];
+                $_SESSION['nom'] = $user['nomA'];
+                $_SESSION['numtel'] = $user['numeroTel'];
+                $_SESSION['email'] = $user['mail'];
+                $_SESSION['cotisation'] = $user['cotisation'];
                 header('Location: profil.php');
                 exit;
             } else {

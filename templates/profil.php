@@ -156,22 +156,20 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm9-1c-.001-.246-.153-.782-.727-1.344C10.71 11.09 9.499 10.5 8 10.5c-1.5 0-2.711.59-3.273 1.156-.574.562-.726 1.098-.727 1.344h8ZM8 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm0-1a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
                 </svg>
-                <?php echo htmlspecialchars($_SESSION['user_name']); ?> <!-- Affiche le nom de l'utilisateur --> 
+                <?php echo htmlspecialchars($_SESSION['user_name']); ?> 
             </div>
             
         </div>
 
         <div class="grid">
-            <!-- Cours Card -->
             <div class="card">
                 <img src="images/calendrier.png" alt="calendrier">
                 <h3>Consulter mes cours</h3>
                 <p>Vous avez <strong>2 cours</strong> de réservés</p>
-                <p><strong>225 €</strong></p>
-                <a href="#" class="action-button">Voir les cours</a>
+                <p><strong>80 €</strong></p>
+                <a href="planningcours.php" class="action-button">Voir les cours</a>
             </div>
 
-            <!-- Poneys Card -->
             <div class="card">
                 <img src="images/myponeys.png" alt="Photo de poneys">
                 <h3>Consulter mes anciens poneys</h3>
@@ -179,14 +177,14 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
         </div>
         <div class="grid"></div>
-            <!-- Infos personnelles -->
             <div class="card">
                 <h3>Vos informations</h3>
                 <div class="info-list">
-                    <p><span>Nom :</span> Avril</p>
-                    <p><span>Prénom :</span> Camille</p>
-                    <p><span>Adresse :</span> 5 allée des chevaux, Paris 75000</p>
-                    <p><span><a href="cotisation.html">Cotisation</a> à jour :</span> Oui</p>
+                    <p><span>Nom : </span><?php echo htmlspecialchars($_SESSION['nom']) ?></p>
+                    <p><span>Prénom : </span><?php echo htmlspecialchars($_SESSION['prenom']) ?></p>
+                    <p><span>Numéro de téléphone : </span><?php echo htmlspecialchars($_SESSION['numtel']) ?></p>
+                    <p><span>Adresse mail : </span><?php echo htmlspecialchars($_SESSION['email']) ?></p>
+                    <p><span>Cotisation à jour : </span><?php if(htmlspecialchars($_SESSION['cotisation']) == 1) {echo "Oui";} else {echo "Non, veuillez régler la cotisation";}?></p>
                     <p><span>Votre poney favori :</span> Looping</p>
                 </div>
             </div>

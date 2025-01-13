@@ -40,7 +40,6 @@
             border-radius: 5px;
         }
 
-        /* Tarifs */
         .container {
             width: 90%;
             max-width: 1200px;
@@ -123,27 +122,27 @@
 
     <main class="tarifs-container">
         <h1>Nos tarifs</h1>
-        <p class="subtitle">À partir du 01 septembre 2024</p>
+        <p class="subtitle">Valable du 01 septembre 2024 au 31 août 2025</p>
         <div class="tarifs-grid">
             <div class="tarif-card">
                 <h3>Licence FFE</h3>
                 <p class="price">50 €</p>
-                <p>Lorem ipsum dolor sit amet, consectetur</p>
+                <p>Licence valable pour la saison 2024/2025</p>
             </div>
             <div class="tarif-card">
                 <h3>Découverte de l’équitation</h3>
                 <p class="price">75 € / heure</p>
-                <p>Lorem ipsum dolor sit amet, consectetur</p>
+                <p>Profiter d'une balade d'une heure à la découverte de l'équitation</p>
             </div>
             <div class="tarif-card">
                 <h3>Balade en forêt</h3>
                 <p class="price">150 €</p>
-                <p>Lorem ipsum dolor sit amet, consectetur</p>
+                <p>Profiter d'une balade en pleine forêt loin du bruit des voitures</p>
             </div>
             <div class="tarif-card">
                 <h3>Grande balade en forêt</h3>
                 <p class="price">170 €</p>
-                <p>Lorem ipsum dolor sit amet, consectetur</p>
+                <p>Grande balade pour se reconnecter avec la nature</p>
             </div>
         </div>
     </main>

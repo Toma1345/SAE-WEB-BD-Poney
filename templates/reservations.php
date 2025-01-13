@@ -270,7 +270,7 @@
                     <p>75 €</p>
                     <p>Taxe: 0.50 €</p>
                     <p class="total">Total: 75.50 €</p>
-                    <a href="#" class="btn">Continuer vers le paiement</a>
+                    <a href="#" class="btn">Valider mes réservations</a>
                 </div>
             </div>
         </div>

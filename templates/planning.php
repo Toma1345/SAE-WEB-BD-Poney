@@ -48,8 +48,6 @@
             font-size: 28px;
             margin-bottom: 20px;
         }
-
-        /* Planning */
         .planning {
             width: 90%;
             max-width: 1200px;
@@ -84,7 +82,6 @@
             background-color: #f3f3f3;
         }
 
-        /* Boutons */
         .bubble {
             display: inline-block;
             padding: 10px 15px;
@@ -105,9 +102,6 @@
         .bubble.available:hover {
             background-color: #c8e6c9;
         }
-        /*.bubble.unavailable:hover {
-            background-color: #ffcdd2;
-        }*/
         footer {
             margin-top: auto;
             text-align: center;
@@ -134,7 +128,6 @@
     <main>
         <h2>Les horaires</h2>
         <div class="planning">
-            <!-- Ligne des jours -->
             <div class="row header-row">
                 <div class="time"></div>
                 <div>Lundi<br>21/10</div>
@@ -147,20 +140,17 @@
             </div>
 
             <?php
-            // Données du planning
             $planning = [
-                "9h" => ["Indisponible", "Réserver", "Indisponible", "Indisponible", "Indisponible", "Réserver", "Réserver"],
-                "10h" => ["Indisponible", "Réserver", "Indisponible", "Indisponible", "Indisponible", "Réserver", "Réserver"],
-                "11h" => ["Indisponible", "Indisponible", "Réserver", "Indisponible", "Indisponible", "Réserver", "Réserver"],
-                "12h" => ["Réserver", "Réserver", "Réserver", "Indisponible", "Indisponible", "Réserver", "Réserver"],
-                "13h" => ["Réserver", "Réserver", "Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver"],
-                "14h" => ["Réserver", "Indisponible", "Indisponible", "Indisponible", "Indisponible", "Réserver", "Réserver"],
-                "15h" => ["Indisponible", "Réserver", "Indisponible", "Indisponible", "Réserver", "Indisponible", "Indisponible"],
-                "16h" => ["Indisponible", "Indisponible", "Indisponible", "Réserver", "Réserver", "Indisponible", "Indisponible"],
-                "17h" => ["Indisponible", "Réserver", "Réserver", "Indisponible", "Indisponible", "Indisponible", "Indisponible"],
+                "9h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "10h" => ["Réserver", "Réserver", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "11h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "13h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "14h" => ["Réserver", "Réserver", "Réserver", "Indisponible", "Réserver", "Réserver", "Réserver"],
+                "15h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "16h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "17h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
             ];
 
-            // Génération du planning
             foreach ($planning as $hour => $slots) {
                 echo '<div class="row">';
                 echo "<div class='time'>$hour</div>";
