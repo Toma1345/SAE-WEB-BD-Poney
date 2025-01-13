@@ -32,7 +32,8 @@ CREATE TABLE COURS (
   nbPersMax INT (2) NOT NULL check (nbPersMax between 1 and 10), -- contrainte du nombre de personnes par cours
   dateC date NOT NULL,
   heureC INT(10) NOT NULL,
-  idM INT(10) NOT NULL -- le moniteur anime ce cours 
+  idM INT(10) NOT NULL, -- le moniteur anime ce cours 
+  FOREIGN KEY (idM) REFERENCES MONITEURS(idM)
 );
 
 CREATE TABLE RESERVER(
@@ -40,14 +41,19 @@ CREATE TABLE RESERVER(
   idP int(10) unique,
   idA int(10) unique,
   paye boolean NOT NULL, 
-  primary key (idC, idP, idA)
+  primary key (idC, idP, idA),
+  FOREIGN KEY (idC) REFERENCES COURS(idC),
+  FOREIGN KEY (idP) REFERENCES PONEYS(idP),
+  FOREIGN KEY (idA) REFERENCES ADHERENTS(idA)
 );
 
-ALTER TABLE COURS ADD CONSTRAINT fk_cours FOREIGN KEY (idM) REFERENCES MONITEURS(idM);
+-- Modification 13/01/2025 : les alter table ne peuvent pas être fait en sqlite (sont limités) il faut donc 
+-- mettre les clés étrangères directement dans les créations des tables ci-dessus.
 
-ALTER TABLE RESERVER ADD CONSTRAINT fk_reserver_cours FOREIGN KEY (idC) REFERENCES COURS(idC);
-ALTER TABLE RESERVER ADD CONSTRAINT fk_reserver_poneys FOREIGN KEY (idP) REFERENCES PONEYS(idP);
-ALTER TABLE RESERVER ADD CONSTRAINT fk_reserver_adherents FOREIGN KEY (idA) REFERENCES ADHERENTS(idA);
+-- ALTER TABLE COURS ADD CONSTRAINT fk_cours FOREIGN KEY (idM) REFERENCES MONITEURS(idM);
+-- ALTER TABLE RESERVER ADD CONSTRAINT fk_reserver_cours FOREIGN KEY (idC) REFERENCES COURS(idC);
+-- ALTER TABLE RESERVER ADD CONSTRAINT fk_reserver_poneys FOREIGN KEY (idP) REFERENCES PONEYS(idP);
+-- ALTER TABLE RESERVER ADD CONSTRAINT fk_reserver_adherents FOREIGN KEY (idA) REFERENCES ADHERENTS(idA);
 
 
 -- Contraintes en trigger
