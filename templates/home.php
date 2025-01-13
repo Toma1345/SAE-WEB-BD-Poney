@@ -140,7 +140,7 @@
             Vous êtes <em>licenciés</em> à la FFE<br>
             Venez découvrir nos <em>poneys</em> !
         </h2>
-        <a href="reservations.php" class="button-primary">Réserver un cours</a>
+        <a href="planning.php" class="button-primary">Réserver un cours</a>
     </section>
 
     <section class="gallery">
