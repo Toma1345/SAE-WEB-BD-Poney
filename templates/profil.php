@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Vérifiez si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php'); // Redirige vers la page de connexion
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -124,7 +134,7 @@
             <a href="reservations.html">Réserver un cours</a>
             <a href="planning.php">Consulter les horaires</a>
             <a href="tarifs.html">Consulter les tarifs</a>
-            <a href="profil.html">Mon profil</a>
+            <a href="profil.php">Mon profil</a>
             <a href="planningcours.html" class="btn">Mes cours</a>
         </nav>
     </header>
@@ -136,8 +146,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm9-1c-.001-.246-.153-.782-.727-1.344C10.71 11.09 9.499 10.5 8 10.5c-1.5 0-2.711.59-3.273 1.156-.574.562-.726 1.098-.727 1.344h8ZM8 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm0-1a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
                 </svg>
-                Camille Avril
+                <?php echo htmlspecialchars($_SESSION['user_name']); ?> <!-- Affiche le nom de l'utilisateur --> 
             </div>
+            <button><a href="logout.php" class="logout-btn">Se déconnecter</a></button>
         </div>
 
         <div class="grid">

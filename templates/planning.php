@@ -110,13 +110,13 @@
     </style>
 </head>
 <body>
-<header>
+    <header>
         <h1><a href="home.html">Grand Galop</a></h1>
         <nav>
             <a href="reservations.html">Réserver un cours</a>
             <a href="planning.php">Consulter les horaires</a>
             <a href="tarifs.html">Consulter les tarifs</a>
-            <a href="profil.html">Mon profil</a>
+            <a href="profil.php">Mon profil</a>
             <a href="planningcours.html" class="btn">Mes cours</a>
         </nav>
     </header>
