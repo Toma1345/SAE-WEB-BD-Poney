@@ -6,6 +6,6 @@ session_unset();
 session_destroy();
 
 // Redirige vers la page de connexion
-header('Location: home.html');
+header('Location: home.php');
 exit;
 ?>

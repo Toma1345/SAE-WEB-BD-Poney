@@ -21,9 +21,10 @@
             border-bottom: 1px solid #ddd;
         }
 
-        header h1 {
-            color: #2d572c;
+        header h1 a {
+            text-decoration:none;
             font-size: 1.5rem;
+            color: #2d572c;
         }
 
         header nav a {
@@ -181,17 +182,26 @@
             flex: 1;
             min-width: 300px;
         }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f0f0f0;
+            color: #333;
+            font-size: 14px;
+            border-top: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1><a href="home.html">Grand Galop</a></h1>
+        <h1><a href="home.php">Grand Galop</a></h1>
         <nav>
-            <a href="reservations.html">Réserver un cours</a>
+            <a href="reservations.php">Réserver un cours</a>
             <a href="planning.php">Consulter les horaires</a>
-            <a href="tarifs.html">Consulter les tarifs</a>
-            <a href="profil.php">Mon profil</a>
-            <a href="planningcours.html" class="btn">Mes cours</a>
+            <a href="tarifs.php">Consulter les tarifs</a>
+            <a href="planningcours.php">Mes cours</a>
+            <a href="profil.php" class="btn">Mon profil</a>
         </nav>
     </header>
 
@@ -265,5 +275,9 @@
             </div>
         </div>
     </div>
+    <footer>
+        <p>Site internet créé par Claire Deneau, Thomas Brossier et Benjamin Doré</p>
+        <p>Dans le cadre de la SAÉ "Poney"</p>
+    </footer>
 </body>
 </html>

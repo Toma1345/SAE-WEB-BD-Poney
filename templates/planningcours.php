@@ -1,15 +1,14 @@
 <?php
-// Configuration de la base de données SQLite
-$db_file = 'SAE-WEB-BD-Poney/bd/database.sqlite';
+
+require_once "../bd/DataBase.php";
 
 try {
     // Connexion à la base de données
-    $pdo = new PDO("sqlite:" . $db_file);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = Database::getConnection();
 
     // Requête pour récupérer les cours
     $query = "
-        SELECT COURS.idC, COURS.tarif, COURS.dateC, COURS.heureC, MONITEURS.nomM, MONITEURS.prenomM
+        SELECT COURS.idC, COURS.tarif, COURS.dateCours, COURS.heureC, MONITEURS.nomM, MONITEURS.prenomM
         FROM COURS
         JOIN MONITEURS ON COURS.idM = MONITEURS.idM
     ";
@@ -26,7 +25,7 @@ try {
     // Organisation des cours par jour et heure
     $planning = [];
     foreach ($courses as $course) {
-        $dayIndex = date('N', strtotime($course['dateC'])) - 1; // 0 pour lundi
+        $dayIndex = date('N', strtotime($course['dateCours'])) - 1; // 0 pour lundi
         $hour = $course['heureC'] . 'h';
         $planning[$dayIndex][$hour] = $course;
     }
@@ -42,35 +41,39 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planning - Mes cours</title>
     <style>
-        /* Même CSS que précédemment */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
-            color: #000;
+            background-color: #f8f8f8;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
         }
 
-        header h1 {
-            font-size: 24px;
-            color: #558c45;
-            margin: 0;
+        header h1 a {
+            text-decoration:none;
+            font-size: 1.5rem;
+            color: #2d572c;
         }
 
-        nav a {
-            margin-left: 20px;
+        header nav a {
+            margin-right: 1rem;
             text-decoration: none;
             color: #000;
-            font-size: 16px;
+        }
+
+        header nav a:last-child {
+            color: #ffffff;
+            background-color: #2d572c;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
         }
 
         .button-primary {
@@ -135,17 +138,26 @@ try {
         .planning .course:hover {
             background-color: #d9ecd0;
         }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f0f0f0;
+            color: #333;
+            font-size: 14px;
+            border-top: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Grand Galop</h1>
+        <h1><a href="home.php">Grand Galop</a></h1>
         <nav>
-            <a href="#">Réserver un cours</a>
-            <a href="#">Consulter les horaires</a>
-            <a href="#">Consulter les tarifs</a>
-            <a href="#">Mon profil</a>
-            <button class="button-primary">Mes cours</button>
+            <a href="reservations.php">Réserver un cours</a>
+            <a href="planning.php">Consulter les horaires</a>
+            <a href="tarifs.php">Consulter les tarifs</a>
+            <a href="planningcours.php">Mes cours</a>
+            <a href="profil.php" class="btn">Mon profil</a>
         </nav>
     </header>
 
@@ -174,6 +186,10 @@ try {
             <?php endforeach; ?>
         </div>
     </div>
+    <footer>
+        <p>Site internet créé par Claire Deneau, Thomas Brossier et Benjamin Doré</p>
+        <p>Dans le cadre de la SAÉ "Poney"</p>
+    </footer>
 </body>
 </html>
 

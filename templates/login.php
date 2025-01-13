@@ -1,24 +1,57 @@
 <?php
 session_start();
 
+require_once "../bd/DataBase.php";
+
+// Message de déconnexion
 if (isset($_GET['logout']) && $_GET['logout'] == 'success') {
     $logout_message = "Vous avez été déconnecté avec succès.";
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+try {
+    // Connexion à la base de données
+    $pdo = Database::getConnection();
+} catch (PDOException $e) {
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
+}
 
-    // Vérification des identifiants (exemple basique)
-    if ($username === 'camille' && $password === '1234') {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['user_name'] = 'Camille Avril';
-        header('Location: profil.php');
-        exit;
+// Vérification des identifiants
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+
+    if (strpos($username, '.') !== false) {
+        [$prenom, $nom] = explode('.', $username, 2);
+
+        // Normaliser en minuscules
+        $prenom = strtolower($prenom);
+        $nom = strtolower($nom);
+
+        $stmt = $pdo->prepare('SELECT * FROM ADHERENTS WHERE LOWER(prenomA) = :prenom AND LOWER(nomA) = :nom');
+        $stmt->bindParam(':prenom', $prenom);
+        $stmt->bindParam(':nom', $nom);
+        $stmt->execute();
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            // Comparaison directe du mot de passe en clair
+            if ($password === $user['mdp']) {
+                $_SESSION['logged_in'] = true;
+                $_SESSION['user_name'] = ucfirst($user['prenomA']) . ' ' . ucfirst($user['nomA']);
+                header('Location: profil.php');
+                exit;
+            } else {
+                $error = 'Mot de passe incorrect.';
+            }
+        } else {
+            $error = 'Identifiants incorrects.';
+        }
     } else {
-        $error = 'Identifiants incorrects.';
+        $error = "Le format du nom d'utilisateur est invalide. Utilisez 'prenom.nom'.";
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -81,6 +114,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #e63946;
             font-weight: bold;
         }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f0f0f0;
+            color: #333;
+            font-size: 14px;
+            border-top: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -93,10 +135,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>
         <form action="" method="POST">
-            <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+            <input type="text" name="username" placeholder="Nom d'utilisateur (prenom.nom)" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit">Se connecter</button>
         </form>
     </div>
+    <footer>
+        <p>Site internet créé par Claire Deneau, Thomas Brossier et Benjamin Doré</p>
+        <p>Dans le cadre de la SAÉ "Poney"</p>
+    </footer>
 </body>
 </html>
