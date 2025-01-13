@@ -114,11 +114,10 @@
     </style>
 </head>
 <body>
-<header>
+    <header>
         <h1><a href="home.php">Grand Galop</a></h1>
         <nav>
-            <a href="reservations.php">Réserver un cours</a>
-            <a href="planning.php">Consulter les horaires</a>
+            <a href="planning.php">Réserver un cours</a>
             <a href="tarifs.php">Consulter les tarifs</a>
             <a href="planningcours.php">Mes cours</a>
             <a href="profil.php" class="btn">Mon profil</a>
@@ -130,13 +129,13 @@
         <div class="planning">
             <div class="row header-row">
                 <div class="time"></div>
-                <div>Lundi<br>21/10</div>
-                <div>Mardi<br>22/10</div>
-                <div>Mercredi<br>23/10</div>
-                <div>Jeudi<br>24/10</div>
-                <div>Vendredi<br>25/10</div>
-                <div>Samedi<br>26/10</div>
-                <div>Dimanche<br>27/10</div>
+                <div>Lundi</div>
+                <div>Mardi</div>
+                <div>Mercredi</div>
+                <div>Jeudi</div>
+                <div>Vendredi</div>
+                <div>Samedi</div>
+                <div>Dimanche</div>
             </div>
 
             <?php
@@ -151,16 +150,31 @@
                 "17h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
             ];
 
+            $baseDate = new DateTime();
+
             foreach ($planning as $hour => $slots) {
                 echo '<div class="row">';
                 echo "<div class='time'>$hour</div>";
-                foreach ($slots as $slot) {
+                foreach ($slots as $index => $slot) {
                     $class = $slot === "Réserver" ? "available" : "unavailable";
-                    echo "<div><div class='bubble $class'>$slot</div></div>";
+
+                    $columnDate = clone $baseDate;
+                    $columnDate->modify("+$index day");
+                    $formattedDate = $columnDate->format('Y-m-d');
+
+                    echo "<div>";
+                    if ($slot === "Réserver") {
+                        echo "<a href='reservations.php?hour=$hour&date=$formattedDate' class='bubble $class'>Réserver</a>";
+                    } else {
+                        echo "<div class='bubble $class'>$slot</div>";
+                    }
+                    echo "</div>";
                 }
                 echo '</div>';
             }
             ?>
+
+
         </div>
     </main>
     <footer>

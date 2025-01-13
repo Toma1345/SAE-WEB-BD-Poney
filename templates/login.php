@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 300px;
             text-align: center;
+            position: relative;
         }
         .login-container h1 {
             color: #2d572c;
@@ -114,19 +115,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #e63946;
             font-weight: bold;
         }
-        footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 10px 0;
-            background-color: #f0f0f0;
-            color: #333;
-            font-size: 14px;
-            border-top: 1px solid #ccc;
+        .back-link {
+            position: left;
+            top: 10px;
+            right: 10px;
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover {
+            color: #555;
+        }
+        .back-link svg {
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
+    
     <div class="login-container">
+        <a class="back-link" href="home.php">
+            ← Retour
+        </a>
         <h1>Connexion</h1>
         <?php if (isset($logout_message)) : ?>
             <p class="message"><?php echo $logout_message; ?></p>
@@ -140,9 +154,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">Se connecter</button>
         </form>
     </div>
-    <footer>
-        <p>Site internet créé par Claire Deneau, Thomas Brossier et Benjamin Doré</p>
-        <p>Dans le cadre de la SAÉ "Poney"</p>
-    </footer>
 </body>
 </html>

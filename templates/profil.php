@@ -140,8 +140,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <header>
         <h1><a href="home.php">Grand Galop</a></h1>
         <nav>
-            <a href="reservations.php">Réserver un cours</a>
-            <a href="planning.php">Consulter les horaires</a>
+            <a href="planning.php">Réserver un cours</a>
             <a href="tarifs.php">Consulter les tarifs</a>
             <a href="planningcours.php">Mes cours</a>
             <a href="logout.php" class="logout-btn">Se déconnecter</a>

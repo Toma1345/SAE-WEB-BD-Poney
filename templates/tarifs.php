@@ -112,8 +112,7 @@
     <header>
         <h1><a href="home.php">Grand Galop</a></h1>
         <nav>
-            <a href="reservations.php">Réserver un cours</a>
-            <a href="planning.php">Consulter les horaires</a>
+            <a href="planning.php">Réserver un cours</a>
             <a href="tarifs.php">Consulter les tarifs</a>
             <a href="planningcours.php">Mes cours</a>
             <a href="profil.php" class="btn">Mon profil</a>
