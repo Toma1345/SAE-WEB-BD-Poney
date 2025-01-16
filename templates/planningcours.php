@@ -8,11 +8,12 @@ try {
 
     // Requête pour récupérer les cours
     $query = "
-        SELECT COURS.idC, COURS.tarif, COURS.dateCours, COURS.heureC, MONITEURS.nomM, MONITEURS.prenomM
+        SELECT COURS.idC, COURS.tarif, COURS.dateC, COURS.heureC, MONITEUR.nomM, MONITEUR.prenomM
         FROM COURS
-        JOIN MONITEURS ON COURS.idM = MONITEURS.idM
+        JOIN MONITEUR JOIN RESERVER JOIN ADHERENT ON COURS.idM = MONITEUR.idM AND ADHERENT.nomA = :nom
     ";
     $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':nom',$_SESSION['nom']);
     $stmt->execute();
 
     // Récupération des résultats

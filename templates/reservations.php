@@ -1,46 +1,93 @@
 <?php
-if (!isset($_SESSION)) {
-    session_start();
+// Connexion à la base de données
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=centre_equestre', 'username', 'password');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die('Erreur de connexion : ' . $e->getMessage());
 }
 
-if (!isset($_SESSION['course1_people'])) {
-    $_SESSION['course1_people'] = 1;
-}
-if (!isset($_SESSION['course2_people'])) {
-    $_SESSION['course2_people'] = 0;
-}
-if (!isset($_SESSION['course3_people'])) {
-    $_SESSION['course3_people'] = 0;
+// Fonction pour récupérer les cours avec les places restantes
+function getCourses($pdo) {
+    $stmt = $pdo->prepare('
+        SELECT c.idC, c.nomC, c.dateC, c.heureC AS heure_debut, c.duree, c.nbPersMax,
+               c.nbPersMax - COUNT(r.idC) AS placesRestantes
+        FROM COURS c
+        LEFT JOIN RESERVATIONS r ON c.idC = r.idC
+        GROUP BY c.idC
+        HAVING placesRestantes > 0
+    ');
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Fonction pour récupérer les poneys disponibles
+function getAvailablePonies($pdo, $date, $startTime, $endTime) {
+    $stmt = $pdo->prepare('
+        SELECT idPoney, nomPoney 
+        FROM PONEYS
+        WHERE idPoney NOT IN (
+            SELECT r.idPoney
+            FROM RESERVATIONS r
+            JOIN COURS c ON r.idC = c.idC
+            WHERE c.dateC = :dateC 
+              AND (
+                  (c.heure BETWEEN :heure_debut AND :heure_fin)
+                  OR (c.heure BETWEEN DATETIME(:heure_debut, "-2 hours") AND :heure_debut)
+                  OR (c.heure BETWEEN :heure_fin AND DATETIME(:heure_fin, "+2 hours"))
+              )
+        )
+    ');
+    $stmt->execute([
+        ':dateC' => $date,
+        ':heure_debut' => $startTime,
+        ':heure_fin' => $endTime
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Récupérer les cours disponibles
+$courses = getCourses($pdo);
+
+// Si le formulaire est soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['course1_increase']) && $_SESSION['course1_people'] < 10) {
-        $_SESSION['course1_people']++;
-    }
-    if (isset($_POST['course1_decrease']) && $_SESSION['course1_people'] > 0) {
-        $_SESSION['course1_people']--;
-    }
+    $pdo->beginTransaction();
+    try {
+        foreach ($_POST['participants'] as $idC => $nbParticipants) {
+            if ($nbParticipants > 0) {
+                for ($i = 0; $i < $nbParticipants; $i++) {
+                    $poids = $_POST['poids'][$idC][$i];
+                    $idPoney = $_POST['poney'][$idC][$i];
 
-    if (isset($_POST['course2_increase']) && $_SESSION['course2_people'] < 10) {
-        $_SESSION['course2_people']++;
-    }
-    if (isset($_POST['course2_decrease']) && $_SESSION['course2_people'] > 0) {
-        $_SESSION['course2_people']--;
-    }
+                    // Vérification des données
+                    if (empty($poids) || empty($idPoney)) {
+                        throw new Exception('Tous les champs doivent être remplis.');
+                    }
 
-    if (isset($_POST['course3_increase']) && $_SESSION['course3_people'] < 10) {
-        $_SESSION['course3_people']++;
-    }
-    if (isset($_POST['course3_decrease']) && $_SESSION['course3_people'] > 0) {
-        $_SESSION['course3_people']--;
+                    // Vérifie que le poney est encore disponible
+                    $ponies = getAvailablePonies($pdo, $_POST['dateC'][$idC], $_POST['heure_debut'][$idC], $_POST['heure_fin'][$idC]);
+                    $poneyDispo = array_filter($ponies, fn($p) => $p['idPoney'] == $idPoney);
+                    if (empty($poneyDispo)) {
+                        throw new Exception("Le poney sélectionné n'est plus disponible.");
+                    }
+
+                    // Enregistre la réservation
+                    $stmt = $pdo->prepare('INSERT INTO RESERVATIONS (idC, poids, idPoney) VALUES (:idC, :poids, :idPoney)');
+                    $stmt->execute([
+                        ':idC' => $idC,
+                        ':poids' => $poids,
+                        ':idPoney' => $idPoney,
+                    ]);
+                }
+            }
+        }
+        $pdo->commit();
+        echo "<p style='color: green;'>Réservation réussie.</p>";
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        echo "<p style='color: red;'>Erreur : " . $e->getMessage() . "</p>";
     }
 }
-
-$course1_price = 75;
-$course2_price = 150;
-$course3_price = 170;
-$taxe = 0.50;
-$total = ($_SESSION['course1_people'] * $course1_price) + ($_SESSION['course2_people'] * $course2_price) + ($_SESSION['course3_people'] * $course3_price) + $taxe;
 ?>
 
 <!DOCTYPE html>
@@ -48,311 +95,85 @@ $total = ($_SESSION['course1_people'] * $course1_price) + ($_SESSION['course2_pe
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réservation de cours</title>
+    <title>Réservations de Poneys</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
+            margin: 20px;
         }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
+        h1 {
+            text-align: center;
+            color: #444;
         }
 
-        header h1 a {
-            text-decoration:none;
-            font-size: 1.5rem;
-            color: #2d572c;
-        }
-
-        header nav a {
-            margin-right: 1rem;
-            text-decoration: none;
-            color: #000;
-        }
-
-        header nav a:last-child {
-            color: #ffffff;
-            background-color: #2d572c;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-        }
-
-        .btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        h2 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 16px;
-            color: #666;
+        fieldset {
+            border: 1px solid #ccc;
+            padding: 10px;
             margin-bottom: 20px;
         }
 
-        .courses {
-            display: flex;
-            gap: 20px;
+        legend {
+            font-weight: bold;
         }
 
-        .course {
-            background-color: #ffffff;
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            overflow: hidden;
-            text-align: left;
-            width: 820px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: row;
-            margin: 2%;
-        }
-
-        .course img {
-            width: 160px;
-            height: 160px;
-            object-fit: cover;
-        }
-
-        .course-details {
-            padding: 15px;
-            flex-grow: 1;
-        }
-
-        .course-details h3 {
-            margin: 0 0 10px;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .course-details p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .price {
-            font-size: 20px;
-            color: #4CAF50;
+        label {
+            display: block;
             margin-top: 10px;
         }
 
-        .reserve-controls {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
+        input, select, button {
+            padding: 5px;
+            margin-top: 5px;
         }
 
-        .reserve-controls span {
-            margin: 0 10px;
-        }
-
-        .reserve-controls button {
-            background-color: #4CAF50;
+        button {
+            background-color: #007BFF;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
             cursor: pointer;
         }
 
-        .reserve-controls button:hover {
-            background-color: #45a049;
-        }
-
-        .sidebar {
-            background-color: #ffffff;
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            padding: 15px;
-            max-width: 300px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h3 {
-            margin-top: 0;
-            font-size: 20px;
-            color: #333;
-        }
-
-        .sidebar p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .sidebar .total {
-            font-size: 18px;
-            color: #333;
-            margin: 15px 0;
-        }
-
-        .sidebar .btn {
-            width: 100%;
-            text-align: center;
-        }
-
-        .layout {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .flex-item {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 10px 0;
-            background-color: #f0f0f0;
-            color: #333;
-            font-size: 14px;
-            border-top: 1px solid #ccc;
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-<header>
-        <h1><a href="home.php">Grand Galop</a></h1>
-        <nav>
-            <a href="planning.php">Réserver un cours</a>
-            <a href="tarifs.php">Consulter les tarifs</a>
-            <a href="planningcours.php">Mes cours</a>
-            <a href="profil.php" class="btn">Mon profil</a>
-        </nav>
-    </header>
+    <h1>Réservations</h1>
+    <form method="post">
+        <?php foreach ($courses as $course) { ?>
+            <fieldset>
+                <legend><?php echo htmlspecialchars($course['nom']); ?></legend>
+                <p>Date : <?php echo htmlspecialchars($course['dateC']); ?></p>
+                <p>Heure : <?php echo htmlspecialchars($course['heure_debut']); ?></p>
+                <p>Durée : <?php echo htmlspecialchars($course['duree']); ?> heures</p>
+                <p>Places restantes : <?php echo htmlspecialchars($course['placesRestantes']); ?></p>
 
-    <div class="container">
-        <h2>Réservation de cours</h2>
-        <?php
+                <label for="participants_<?php echo $course['idC']; ?>">Nombre de participants :</label>
+                <input type="number" name="participants[<?php echo $course['idC']; ?>]" min="0" max="<?php echo $course['placesRestantes']; ?>" value="0" required>
 
-            $date = isset($_GET['date']) ? $_GET['date'] : '';
-            if (isset($_GET['hour'])) {
-                $hour_raw = $_GET['hour']; // Exemple : "9h"
-                // Retirer le "h" et ajouter les minutes
-                $hour = str_replace('h', '', $hour_raw); 
-                $hour = str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00'; // Transforme "9" en "09:00"
-            } else {
-                $hour = ''; // Valeur par défaut
-            }
-            
+                <?php if ($course['placesRestantes'] > 0) { ?>
+                    <?php for ($i = 0; $i < $course['placesRestantes']; $i++) { ?>
+                        <label>Poids participant :</label>
+                        <input type="number" name="poids[<?php echo $course['idC']; ?>][]" required>
 
-        ?>
-
-        <input type="date" name="choixdate" id="date_reserv" value="<?php echo htmlspecialchars($date); ?>">
-        <input type="time" name="choixhour" id="hour_reserv" value="<?php echo htmlspecialchars($hour); ?>">
-
-
-        <p class="subtitle">3 possibilités</p>
-
-        <div class="layout">
-            <div class="flex-item">
-                <form method="POST">
-                    <div class="courses">
-                        <div class="course">
-                            <img src="images/bubble.png" alt="Découvrir l'équitation">
-                            <div class="course-details">
-                                <h3>Découvrir l'équitation (1h)</h3>
-                                <p>Reste 3 places</p>
-                                <p class="price">75 €</p>
-                                <div class="reserve-controls">
-                                    <button type="submit" name="course1_decrease">-</button>
-                                    <span><?php echo $_SESSION['course1_people']; ?> personnes</span>
-                                    <button type="submit" name="course1_increase">+</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="courses">
-                        <div class="course">
-                            <img src="images/balade_foret.png" alt="Balade en forêt">
-                            <div class="course-details">
-                                <h3>Balade en forêt (1h)</h3>
-                                <p>Reste 10 places</p>
-                                <p class="price">150 €</p>
-                                <div class="reserve-controls">
-                                    <button type="submit" name="course2_decrease">-</button>
-                                    <span><?php echo $_SESSION['course2_people']; ?> personnes</span>
-                                    <button type="submit" name="course2_increase">+</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="courses">
-                        <div class="course">
-                            <img src="images/grande_balade.png" alt="Grande balade en forêt">
-                            <div class="course-details">
-                                <h3>Grande balade en forêt (2h)</h3>
-                                <p>Reste 2 places</p>
-                                <p class="price">170 €</p>
-                                <div class="reserve-controls">
-                                    <button type="submit" name="course3_decrease">-</button>
-                                    <span><?php echo $_SESSION['course3_people']; ?> personnes</span>
-                                    <button type="submit" name="course3_increase">+</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="flex-item">
-                <div class="sidebar">
-                    <h3>Réservation</h3>
-
-                    <h4>Détails des cours réservés</h4>
-                    <?php if ($_SESSION['course1_people'] > 0) { ?>
-                        <p>1 - Découvrir l'équitation: <?php echo $_SESSION['course1_people']; ?> personnes</p>
+                        <label>Poney :</label>
+                        <select name="poney[<?php echo $course['idC']; ?>][]">
+                            <option value="">-- Choisir un poney --</option>
+                            <?php 
+                            $ponies = getAvailablePonies($pdo, $course['dateC'], $course['heure_debut'], $course['heure_debut'] + $course['duree']);
+                            foreach ($ponies as $poney) { ?>
+                                <option value="<?php echo $poney['idPoney']; ?>">
+                                    <?php echo htmlspecialchars($poney['nomPoney']); ?>
+                                </option>
+                            <?php } ?>
+                        </select>
                     <?php } ?>
-                    <?php if ($_SESSION['course2_people'] > 0) { ?>
-                        <p>2 - Balade en forêt: <?php echo $_SESSION['course2_people']; ?> personnes</p>
-                    <?php } ?>
-                    <?php if ($_SESSION['course3_people'] > 0) { ?>
-                        <p>3 - Grande balade en forêt: <?php echo $_SESSION['course3_people']; ?> personnes</p>
-                    <?php } ?>
-
-                    <p>Taxe : 0,50 €</p>
-                    <p class="total">Total: <?php echo number_format($total, 2, ',', ' ') ?> €</p>
-                    <a href="#" class="btn">Réserver les cours</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>Site internet créé par Claire Deneau, Thomas Brossier et Benjamin Doré</p>
-        <p>Dans le cadre de la SAÉ "Poney"</p>
-    </footer>
+                <?php } ?>
+            </fieldset>
+        <?php } ?>
+        <button type="submit">Réserver</button>
+    </form>
 </body>
 </html>
-

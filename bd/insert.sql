@@ -19,10 +19,11 @@ VALUES
 (4, 'California', 80);
 
 -- Insertion des cours
-INSERT INTO COURS (idC, tarif, duree, nbPersMax, dateC, heureC, idM)
+INSERT INTO COURS (idC, nomC, tarif, duree, nbPersMax, dateC, heureC, idM)
 VALUES 
-(1, 30, 1, 5, '2025-01-15', 10, 1),
-(2, 50, 2, 8, '2025-01-16', 14, 2);
+(1, 'Découverte',30, 1, 1, '2025-01-16', 10, 1),
+(2, 'Petite balade en foret', 50, 10, 8, '2025-01-16', 14, 2);
+(3, 'Grande balade en foret', 120, 5, 8, '2025-01-16', 14, 2);
 
 
 -- Insertion des réservations

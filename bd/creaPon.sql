@@ -36,6 +36,7 @@ CREATE TABLE PONEY(
 
 CREATE TABLE COURS(
   idC int(10) NOT NULL primary key,
+  nomC VARCHAR(42) NOT NULL,
   tarif INT(10) NOT NULL,
   duree INT(1) NOT NULL, --check (duree between 1 and 2), contrainte de l'heure ( 1 heure ou 2 )
   nbPersMax INT (2) NOT NULL, --check (nbPersMax between 1 and 10), contrainte du nombre de personnes par cours

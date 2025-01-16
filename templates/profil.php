@@ -1,9 +1,57 @@
 <?php
+require_once "../bd/DataBase.php";
 session_start();
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: login.php');
     exit;
+}
+
+try {
+    // Connexion à la base de données
+    $pdo = Database::getConnection();
+
+    $nbcours = '/';
+    $prixcours = '/';
+
+    if ($_SESSION['role'] === 'ADHERENT') {
+    // Requête pour récupérer le nombre de cours
+    $query = "
+        SELECT IFNULL(COUNT(idC), 0)
+        FROM COURS
+        JOIN RESERVER JOIN ADHERENT ON ADHERENT.nomA = :nom
+    ";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':nom',$_SESSION['nom']);
+    $stmt->execute();
+
+    $nbcours = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Requête pour récupérer le prix des cours
+    $query = "
+        SELECT IFNULL(SUM(tarifs), 0)
+        FROM COURS
+        JOIN MONITEUR JOIN RESERVER JOIN ADHERENT ON ADHERENT.nomA = :nom
+    ";
+    $stmt2 = $pdo->prepare($query);
+    $stmt2->bindParam(':nom',$_SESSION['nom']);
+    $stmt2->execute();
+
+    $prixcours = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    }elseif($_SESSION['role'] === 'MONITEUR') {
+        $query = "
+        SELECT IFNULL(COUNT(idC), 0)
+        FROM COURS
+        JOIN RESERVER JOIN ADHERENT ON ADHERENT.nomA = :nom
+    ";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':nom',$_SESSION['nom']);
+    $stmt->execute();
+
+    $nbcours = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (PDOException $e) {
+    die("Erreur lors de la connexion à la base de données : " . $e->getMessage());
 }
 ?>
 
@@ -164,8 +212,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             <div class="card">
                 <img src="images/calendrier.png" alt="calendrier">
                 <h3>Consulter mes cours</h3>
-                <p>Vous avez <strong>2 cours</strong> de réservés</p>
-                <p><strong>80 €</strong></p>
+                <p>Vous avez <strong><?php echo htmlspecialchars($nbcours) ?> cours</strong> de réservés</p>
+                <p><strong><?php echo htmlspecialchars($prixcours) ?> €</strong></p>
                 <a href="planningcours.php" class="action-button">Voir les cours</a>
             </div>
 
@@ -183,7 +231,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <p><span>Prénom : </span><?php echo htmlspecialchars($_SESSION['prenom']) ?></p>
                     <p><span>Numéro de téléphone : </span><?php echo htmlspecialchars($_SESSION['numtel']) ?></p>
                     <p><span>Adresse mail : </span><?php echo htmlspecialchars($_SESSION['email']) ?></p>
-                    <p><span>Cotisation à jour : </span><?php if(htmlspecialchars($_SESSION['cotisation']) == 1) {echo "Oui";} else {echo "Non, veuillez régler la cotisation";}?></p>
+                    <p><span>Cotisation à jour : </span><?php if(htmlspecialchars($_SESSION['cotisation']) == 1) {echo "Oui";} else {if(htmlspecialchars($_SESSION['cotisation']) == 0) {echo "Non, veuillez la régler dans les plus brefs délais";} else {echo "Non concerné";}}?></p>
                     <p><span>Votre poney favori :</span> Looping</p>
                 </div>
             </div>
