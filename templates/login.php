@@ -23,26 +23,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $prenom = strtolower($prenom);
         $nom = strtolower($nom);
 
-        $stmt = $pdo->prepare('SELECT * FROM ADHERENTS WHERE LOWER(prenomA) = :prenom AND LOWER(nomA) = :nom');
-        $stmt->bindParam(':prenom', $prenom);
-        $stmt->bindParam(':nom', $nom);
-        $stmt->execute();
+        $tables = [
+            'ADHERENT' => [
+                'prenom' => 'prenomA',
+                'nom' => 'nomA',
+                'id' => 'idA',
+                'tel' => 'numeroTel',
+                'mail' => 'mailA',
+                'role' => 'adherent',
+                'additional' => ['cotisation', 'poids', 'dateNaissA']
+            ],
+            'MONITEUR' => [
+                'prenom' => 'prenomM',
+                'nom' => 'nomM',
+                'id' => 'idM',
+                'tel' => 'numeroTelM',
+                'mail' => 'mailM',
+                'role' => 'moniteur',
+                'additional' => ['specialite', 'dateNaissM']
+            ],
+            'ADMIN' => [
+                'prenom' => 'prenomA',
+                'nom' => 'nomA',
+                'id' => 'idA',
+                'tel' => 'numeroTelA',
+                'mail' => 'mailA',
+                'role' => 'admin',
+                'additional' => ['dateNaissA']
+            ]
+        ];
 
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = null;
+        $currentTable = null;
+
+        foreach ($tables as $table => $columns) {
+            $stmt = $pdo->prepare(
+                "SELECT * FROM $table WHERE LOWER({$columns['prenom']}) = :prenom AND LOWER({$columns['nom']}) = :nom"
+            );
+            $stmt->bindParam(':prenom', $prenom);
+            $stmt->bindParam(':nom', $nom);
+            $stmt->execute();
+
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user) {
+                $currentTable = $table;
+                break;
+            }
+        }
 
         if ($user) {
-            if ($password === $user['mdp']) {
+            if ($password === (string)$user[$tables[$currentTable]['tel']]) {
                 $_SESSION['logged_in'] = true;
-                $_SESSION['user_name'] = ucfirst($user['prenomA']) . ' ' . ucfirst($user['nomA']);
-                $_SESSION['prenom'] = $user['prenomA'];
-                $_SESSION['nom'] = $user['nomA'];
-                $_SESSION['numtel'] = $user['numeroTel'];
-                $_SESSION['email'] = $user['mail'];
-                $_SESSION['cotisation'] = $user['cotisation'];
+                $_SESSION['role'] = $tables[$currentTable]['role'];
+                $_SESSION['user_name'] = ucfirst($user[$tables[$currentTable]['prenom']]) . ' ' . ucfirst($user[$tables[$currentTable]['nom']]);
+                $_SESSION['prenom'] = $user[$tables[$currentTable]['prenom']];
+                $_SESSION['nom'] = $user[$tables[$currentTable]['nom']];
+                $_SESSION['id'] = $user[$tables[$currentTable]['id']];
+                $_SESSION['email'] = $user[$tables[$currentTable]['mail']] ?? null;
+                $_SESSION['numtel'] = $user[$tables[$currentTable]['tel']];
+
+                foreach ($tables[$currentTable]['additional'] as $column) {
+                    if (isset($user[$column])) {
+                        $_SESSION[$column] = $user[$column];
+                    }
+                }
+
                 header('Location: profil.php');
                 exit;
             } else {
-                $error = 'Mot de passe incorrect.';
+                $error = 'Mot de passe incorrect (vérifiez votre numéro de téléphone).';
             }
         } else {
             $error = 'Identifiants incorrects.';
@@ -51,6 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Le format du nom d'utilisateur est invalide. Utilisez 'prenom.nom'.";
     }
 }
+
+
 
 ?>
 <!DOCTYPE html>

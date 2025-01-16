@@ -1,15 +1,15 @@
-CREATE TABLE ADHERENTS (
+CREATE TABLE ADHERENT(
   idA INT(10) NOT NULL primary key, -- numero de licence
   nomA VARCHAR(42),
   prenomA VARCHAR(42),
   cotisation boolean NOT NULL,
-  poidsA INT(4),
+  poids INT(4),
   numeroTel int(10) NOT NULL,
-  mail varchar(42) NOT NULL,
-  dateNaiss varchar(42) NOT NULL
+  mailA varchar(42) NOT NULL,
+  dateNaissA varchar(42) NOT NULL
 );
 
-CREATE TABLE MONITEURS (
+CREATE TABLE MONITEUR(
   idM INT(10) NOT NULL primary key, -- numero de licence
   nomM VARCHAR(42),
   prenomM VARCHAR(42),
@@ -19,18 +19,27 @@ CREATE TABLE MONITEURS (
   specialite VARCHAR(42)
 );
 
-CREATE TABLE PONEYS (
+CREATE TABLE ADMIN(
+  idA INT(10) NOT NULL primary key, -- numero de licence
+  nomA VARCHAR(42),
+  prenomA VARCHAR(42),
+  numeroTelA int(10),
+  mailA VARCHAR(42),
+  dateNaissA VARCHAR(42)
+);
+
+CREATE TABLE PONEY(
   idP INT(10) NOT NULL primary key,
   nomP VARCHAR(42),
   poidsMax int(5)
 );
 
-CREATE TABLE COURS (
+CREATE TABLE COURS(
   idC int(10) NOT NULL primary key,
   tarif INT(10) NOT NULL,
-  duree INT(1) NOT NULL check (duree between 1 and 2), -- contrainte de l'heure ( 1 heure ou 2 )
-  nbPersMax INT (2) NOT NULL check (nbPersMax between 1 and 10), -- contrainte du nombre de personnes par cours
-  dateC date NOT NULL,
+  duree INT(1) NOT NULL, --check (duree between 1 and 2), contrainte de l'heure ( 1 heure ou 2 )
+  nbPersMax INT (2) NOT NULL, --check (nbPersMax between 1 and 10), contrainte du nombre de personnes par cours
+  dateC TEXT NOT NULL,
   heureC INT(10) NOT NULL,
   idM INT(10) NOT NULL, -- le moniteur anime ce cours 
   FOREIGN KEY (idM) REFERENCES MONITEURS(idM)
@@ -38,8 +47,8 @@ CREATE TABLE COURS (
 
 CREATE TABLE RESERVER(
   idC int(10),
-  idP int(10) unique,
-  idA int(10) unique,
+  idP int(10),
+  idA int(10),
   paye boolean NOT NULL, 
   primary key (idC, idP, idA),
   FOREIGN KEY (idC) REFERENCES COURS(idC),
@@ -58,7 +67,7 @@ CREATE TABLE RESERVER(
 
 -- Contraintes en trigger
 
-delimiter |
+/*delimiter |
 create or replace trigger regulationReservations before insert on RESERVER for each row
 begin
   declare coursAvant int ;
@@ -357,3 +366,4 @@ begin
 end |
 
 delimiter ;
+*/
