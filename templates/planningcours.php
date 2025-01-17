@@ -3,10 +3,8 @@
 require_once "../bd/DataBase.php";
 
 try {
-    // Connexion à la base de données
     $pdo = Database::getConnection();
 
-    // Requête pour récupérer les cours
     $query = "
         SELECT COURS.idC, COURS.tarif, COURS.dateC, COURS.heureC, MONITEUR.nomM, MONITEUR.prenomM
         FROM COURS
@@ -16,17 +14,14 @@ try {
     $stmt->bindParam(':nom',$_SESSION['nom']);
     $stmt->execute();
 
-    // Récupération des résultats
     $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Structure des jours et heures
     $days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
     $hours = ['9h', '10h', '11h', '13h', '14h', '15h', '16h', '17h'];
 
-    // Organisation des cours par jour et heure
     $planning = [];
     foreach ($courses as $course) {
-        $dayIndex = date('N', strtotime($course['dateCours'])) - 1; // 0 pour lundi
+        $dayIndex = date('N', strtotime($course['dateCours'])) - 1;
         $hour = $course['heureC'] . 'h';
         $planning[$dayIndex][$hour] = $course;
     }
@@ -164,13 +159,11 @@ try {
     <div class="container">
         <h2>Mes cours</h2>
         <div class="planning">
-            <!-- Première ligne : entêtes des jours -->
             <div class="header time"></div>
             <?php foreach ($days as $day): ?>
                 <div class="header"><?= $day ?></div>
             <?php endforeach; ?>
 
-            <!-- Lignes horaires -->
             <?php foreach ($hours as $hour): ?>
                 <div class="time"><?= $hour ?></div>
                 <?php for ($i = 0; $i < count($days); $i++): ?>

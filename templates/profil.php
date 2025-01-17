@@ -8,14 +8,12 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 }
 
 try {
-    // Connexion à la base de données
     $pdo = Database::getConnection();
 
     $nbcours = '/';
     $prixcours = '/';
 
     if ($_SESSION['role'] === 'ADHERENT') {
-    // Requête pour récupérer le nombre de cours
     $query = "
         SELECT IFNULL(COUNT(idC), 0)
         FROM COURS
@@ -27,7 +25,6 @@ try {
 
     $nbcours = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Requête pour récupérer le prix des cours
     $query = "
         SELECT IFNULL(SUM(tarifs), 0)
         FROM COURS

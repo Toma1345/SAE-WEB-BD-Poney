@@ -2,50 +2,42 @@
 session_start();
 require_once "../bd/DataBase.php";
 
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header('Location: login.php');
     exit;
 }
 
-// Connexion à la base de données
 try {
     $pdo = Database::getConnection();
 } catch (PDOException $e) {
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Récupérer la date et l'heure depuis l'URL
 $date = isset($_GET['date']) ? $_GET['date'] : '2025-01-15';
 $hour = isset($_GET['hour']) ? $_GET['hour'] : '9';
 
-// Vérification pour retirer un éventuel "h" dans l'heure
 $hour = preg_replace('/[^0-9]/', '', $hour);
 
-// Gestion de la soumission du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idC = $_POST['idC'];
     $idP = $_POST['idP'];
     $idA = $_SESSION['id'];
 
-    // Insertion de la réservation dans la base de données
     $stmt = $pdo->prepare("INSERT INTO RESERVER (idC, idP, idA, paye) VALUES (:idC, :idP, :idA, :paye)");
     $stmt->execute([
         ':idC' => $idC,
         ':idP' => $idP,
         ':idA' => $idA,
-        ':paye' => 1, // On suppose que le paiement est effectué
+        ':paye' => 1,
     ]);
 
     echo "<p>Réservation effectuée avec succès !</p>";
 }
 
-// Récupération des cours disponibles
 $stmt = $pdo->prepare("SELECT * FROM COURS WHERE dateC = :date AND heureC = :hour");
 $stmt->execute([':date' => $date, ':hour' => $hour]);
 $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Récupération des poneys
 $poneys = $pdo->query("SELECT * FROM PONEY")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
