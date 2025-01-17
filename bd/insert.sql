@@ -22,8 +22,11 @@ VALUES
 INSERT INTO COURS (idC, nomC, tarif, duree, nbPersMax, dateC, heureC, idM)
 VALUES 
 (1, 'Découverte',30, 1, 1, '2025-01-16', 10, 1),
-(2, 'Petite balade en foret', 50, 10, 8, '2025-01-16', 14, 2);
-(3, 'Grande balade en foret', 120, 5, 8, '2025-01-16', 14, 2);
+(2, 'Petite balade en foret', 50, 10, 8, '2025-01-16', 14, 2),
+(3, 'Grande balade en foret', 120, 5, 8, '2025-01-16', 14, 1),
+(4, 'Découverte',30, 1, 1, '2025-01-17', 10, 1),
+(5, 'Petite balade en foret', 50, 10, 8, '2025-01-17', 14, 2),
+(6, 'Grande balade en foret', 120, 5, 8, '2025-01-18', 14, 1);
 
 
 -- Insertion des réservations

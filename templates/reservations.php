@@ -1,91 +1,57 @@
 <?php
 // Connexion à la base de données
+require_once "../bd/DataBase.php";
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=centre_equestre', 'username', 'password');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = Database::getConnection();
 } catch (PDOException $e) {
     die('Erreur de connexion : ' . $e->getMessage());
 }
 
-// Fonction pour récupérer les cours avec les places restantes
-function getCourses($pdo) {
+// Fonction pour récupérer les cours disponibles à une date donnée
+function getCoursesByDate($pdo, $date) {
     $stmt = $pdo->prepare('
-        SELECT c.idC, c.nomC, c.dateC, c.heureC AS heure_debut, c.duree, c.nbPersMax,
-               c.nbPersMax - COUNT(r.idC) AS placesRestantes
+        SELECT c.idC, c.nomC, c.dateC, c.heureC AS heure_debut, c.duree, c.prix, c.nbPersonnesMax,
+               c.nbPersonnesMax - COUNT(r.idC) AS placesRestantes
         FROM COURS c
-        LEFT JOIN RESERVATIONS r ON c.idC = r.idC
+        LEFT JOIN RESERVER r ON c.idC = r.idC
+        WHERE c.dateC = :date
         GROUP BY c.idC
         HAVING placesRestantes > 0
     ');
-    $stmt->execute();
+    $stmt->execute([':date' => $date]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Fonction pour récupérer les poneys disponibles
-function getAvailablePonies($pdo, $date, $startTime, $endTime) {
-    $stmt = $pdo->prepare('
-        SELECT idPoney, nomPoney 
-        FROM PONEYS
-        WHERE idPoney NOT IN (
-            SELECT r.idPoney
-            FROM RESERVATIONS r
-            JOIN COURS c ON r.idC = c.idC
-            WHERE c.dateC = :dateC 
-              AND (
-                  (c.heure BETWEEN :heure_debut AND :heure_fin)
-                  OR (c.heure BETWEEN DATETIME(:heure_debut, "-2 hours") AND :heure_debut)
-                  OR (c.heure BETWEEN :heure_fin AND DATETIME(:heure_fin, "+2 hours"))
-              )
-        )
-    ');
-    $stmt->execute([
-        ':dateC' => $date,
-        ':heure_debut' => $startTime,
-        ':heure_fin' => $endTime
-    ]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Récupérer les cours disponibles
-$courses = getCourses($pdo);
+// Récupération de la date sélectionnée ou date par défaut (aujourd'hui)
+$dateSelectionnee = $_POST['date'] ?? date('Y-m-d');
+$courses = getCoursesByDate($pdo, $dateSelectionnee);
 
 // Si le formulaire est soumis
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation'])) {
     $pdo->beginTransaction();
     try {
         foreach ($_POST['participants'] as $idC => $nbParticipants) {
-            if ($nbParticipants > 0) {
-                for ($i = 0; $i < $nbParticipants; $i++) {
-                    $poids = $_POST['poids'][$idC][$i];
-                    $idPoney = $_POST['poney'][$idC][$i];
+            for ($i = 0; $i < $nbParticipants; $i++) {
+                $poids = $_POST['poids'][$idC][$i];
+                $idPoney = $_POST['poney'][$idC][$i];
 
-                    // Vérification des données
-                    if (empty($poids) || empty($idPoney)) {
-                        throw new Exception('Tous les champs doivent être remplis.');
-                    }
-
-                    // Vérifie que le poney est encore disponible
-                    $ponies = getAvailablePonies($pdo, $_POST['dateC'][$idC], $_POST['heure_debut'][$idC], $_POST['heure_fin'][$idC]);
-                    $poneyDispo = array_filter($ponies, fn($p) => $p['idPoney'] == $idPoney);
-                    if (empty($poneyDispo)) {
-                        throw new Exception("Le poney sélectionné n'est plus disponible.");
-                    }
-
-                    // Enregistre la réservation
-                    $stmt = $pdo->prepare('INSERT INTO RESERVATIONS (idC, poids, idPoney) VALUES (:idC, :poids, :idPoney)');
-                    $stmt->execute([
-                        ':idC' => $idC,
-                        ':poids' => $poids,
-                        ':idPoney' => $idPoney,
-                    ]);
+                if (empty($poids) || empty($idPoney)) {
+                    throw new Exception('Tous les champs doivent être remplis.');
                 }
+
+                $stmt = $pdo->prepare('INSERT INTO RESERVER (idC, poids, idPoney) VALUES (:idC, :poids, :idPoney)');
+                $stmt->execute([
+                    ':idC' => $idC,
+                    ':poids' => $poids,
+                    ':idPoney' => $idPoney,
+                ]);
             }
         }
         $pdo->commit();
-        echo "<p style='color: green;'>Réservation réussie.</p>";
+        $successMessage = "Réservation réussie.";
     } catch (Exception $e) {
         $pdo->rollBack();
-        echo "<p style='color: red;'>Erreur : " . $e->getMessage() . "</p>";
+        $errorMessage = "Erreur : " . $e->getMessage();
     }
 }
 ?>
@@ -100,21 +66,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #f9f9f9;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            color: #444;
-        }
-
-        fieldset {
-            border: 1px solid #ccc;
-            padding: 10px;
             margin-bottom: 20px;
         }
 
-        legend {
-            font-weight: bold;
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .courses {
+            flex: 3;
+        }
+
+        .cart {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .course {
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .course h3 {
+            margin: 0 0 10px;
         }
 
         label {
@@ -122,15 +108,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 10px;
         }
 
-        input, select, button {
-            padding: 5px;
+        input, select {
+            padding: 8px;
             margin-top: 5px;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
         }
 
         button {
             background-color: #007BFF;
             color: white;
             border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
             cursor: pointer;
         }
 
@@ -140,40 +131,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <h1>Réservations</h1>
-    <form method="post">
-        <?php foreach ($courses as $course) { ?>
-            <fieldset>
-                <legend><?php echo htmlspecialchars($course['nom']); ?></legend>
-                <p>Date : <?php echo htmlspecialchars($course['dateC']); ?></p>
-                <p>Heure : <?php echo htmlspecialchars($course['heure_debut']); ?></p>
-                <p>Durée : <?php echo htmlspecialchars($course['duree']); ?> heures</p>
-                <p>Places restantes : <?php echo htmlspecialchars($course['placesRestantes']); ?></p>
+    <div class="header">
+        <h1>Réservation de cours</h1>
+        <form method="post">
+            <label for="date">Date :</label>
+            <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($dateSelectionnee); ?>" onchange="this.form.submit()">
+        </form>
+    </div>
 
-                <label for="participants_<?php echo $course['idC']; ?>">Nombre de participants :</label>
-                <input type="number" name="participants[<?php echo $course['idC']; ?>]" min="0" max="<?php echo $course['placesRestantes']; ?>" value="0" required>
+    <div class="container">
+        <div class="courses">
+            <?php foreach ($courses as $course): ?>
+                <div class="course">
+                    <h3><?php echo htmlspecialchars($course['nom']); ?> (<?php echo htmlspecialchars($course['duree']); ?>h)</h3>
+                    <p>Heure : <?php echo htmlspecialchars($course['heure_debut']); ?></p>
+                    <p>Prix : <?php echo htmlspecialchars($course['prix']); ?> €</p>
+                    <p>Places restantes : <?php echo htmlspecialchars($course['placesRestantes']); ?></p>
 
-                <?php if ($course['placesRestantes'] > 0) { ?>
-                    <?php for ($i = 0; $i < $course['placesRestantes']; $i++) { ?>
-                        <label>Poids participant :</label>
-                        <input type="number" name="poids[<?php echo $course['idC']; ?>][]" required>
+                    <form method="post">
+                        <label for="participants_<?php echo $course['idC']; ?>">Nombre de participants :</label>
+                        <input type="number" id="participants_<?php echo $course['idC']; ?>" name="participants[<?php echo $course['idC']; ?>]" min="0" max="<?php echo $course['placesRestantes']; ?>" value="0">
 
-                        <label>Poney :</label>
-                        <select name="poney[<?php echo $course['idC']; ?>][]">
-                            <option value="">-- Choisir un poney --</option>
-                            <?php 
-                            $ponies = getAvailablePonies($pdo, $course['dateC'], $course['heure_debut'], $course['heure_debut'] + $course['duree']);
-                            foreach ($ponies as $poney) { ?>
-                                <option value="<?php echo $poney['idPoney']; ?>">
-                                    <?php echo htmlspecialchars($poney['nomPoney']); ?>
-                                </option>
-                            <?php } ?>
-                        </select>
-                    <?php } ?>
-                <?php } ?>
-            </fieldset>
-        <?php } ?>
-        <button type="submit">Réserver</button>
-    </form>
+                        <?php for ($i = 0; $i < $course['placesRestantes']; $i++): ?>
+                            <div class="participant-fields">
+                                <label>Poids :</label>
+                                <input type="number" name="poids[<?php echo $course['idC']; ?>][]" placeholder="kg">
+
+                                <label>Poney :</label>
+                                <select name="poney[<?php echo $course['idC']; ?>][]">
+                                    <option value="">-- Choisir un poney --</option>
+                                    <?php 
+                                    $ponies = $pdo->query('SELECT idPoney, nomPoney FROM PONEYS')->fetchAll(PDO::FETCH_ASSOC);
+                                    foreach ($ponies as $poney): ?>
+                                        <option value="<?php echo $poney['idPoney']; ?>">
+                                            <?php echo htmlspecialchars($poney['nomPoney']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endfor; ?>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="cart">
+            <h2>Réserver</h2>
+            <!-- Résumé des réservations ici -->
+            <button type="submit">Réserver</button>
+        </div>
+    </div>
 </body>
 </html>
