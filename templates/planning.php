@@ -140,14 +140,14 @@
 
             <?php
             $planning = [
-                "9h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "9h" => ["Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
                 "10h" => ["Réserver", "Réserver", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver"],
-                "11h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
-                "13h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "11h" => ["Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "13h" => ["Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
                 "14h" => ["Réserver", "Réserver", "Réserver", "Indisponible", "Réserver", "Réserver", "Réserver"],
-                "15h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
-                "16h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
-                "17h" => ["Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "15h" => ["Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "16h" => ["Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
+                "17h" => ["Indisponible", "Indisponible", "Réserver", "Réserver", "Réserver", "Réserver", "Réserver"],
             ];
 
             $baseDate = new DateTime();
